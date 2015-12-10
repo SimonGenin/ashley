@@ -5,34 +5,28 @@ import be.simongenin.components.*;
 import be.simongenin.textures.TextureLoader;
 import be.simongenin.textures.TextureType;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
-
-import java.util.ArrayList;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 
 public class PlayerEntity extends Entity {
 
-    TransformComponent transformComponent;
-    GravityComponent gravityComponent;
-    MovementComponent movementComponent;
+    // physics based
+    private static float SIZE = 1;
+
     TextureComponent textureComponent;
     PhysicsComponent physicsComponent;
     PlayerInputComponent playerInputComponent;
 
-    public PlayerEntity(int x, int y) {
+    public PlayerEntity(float x, float y) {
 
         super();
 
-        transformComponent = new TransformComponent();
-        gravityComponent = new GravityComponent();
-        movementComponent = new MovementComponent();
         textureComponent = new TextureComponent();
         physicsComponent  = new PhysicsComponent();
         playerInputComponent = new PlayerInputComponent();
-
-        transformComponent.x = x;
-        transformComponent.y = y;
-
-        movementComponent.states = new ArrayList<>();
 
         textureComponent.texture = TextureLoader.load("sand", TextureType.BLOC);
         textureComponent.priority = 1;
@@ -40,12 +34,25 @@ public class PlayerEntity extends Entity {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(x, y);
+        bodyDef.fixedRotation = true;
 
-        physicsComponent.body = World.physics.createBody(bodyDef);
+        Body body = World.physics.createBody(bodyDef);
 
-        add(transformComponent);
-        add(gravityComponent);
-        add(movementComponent);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(SIZE / 2, SIZE / 2, new Vector2(SIZE / 2, SIZE / 2), 0);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 0.5f;
+        fixtureDef.friction = 1.0f;
+        fixtureDef.restitution = 0.0f;
+
+        body.createFixture(fixtureDef);
+
+        shape.dispose();
+
+        physicsComponent.body = body;
+
         add(textureComponent);
         add(physicsComponent);
         add(playerInputComponent);

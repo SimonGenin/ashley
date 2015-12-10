@@ -1,6 +1,7 @@
 package be.simongenin.systems;
 
 import be.simongenin.World;
+import be.simongenin.components.PhysicsComponent;
 import be.simongenin.components.TextureComponent;
 import be.simongenin.components.TransformComponent;
 import be.simongenin.utils.Families;
@@ -10,7 +11,8 @@ import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
@@ -84,18 +86,55 @@ public class RenderingSystem extends IteratingSystem {
         for (Entity entity : renderQueue) {
 
             TransformComponent tc = Mappers.transformComponents.get(entity);
+            PhysicsComponent pc = Mappers.physicsComponent.get(entity);
+
+            if (tc != null && pc != null) {
+                log.error("Entity with transform and physics");
+            }
+
             TextureComponent tex = Mappers.textureComponents.get(entity);
-            TextureAtlas.AtlasRegion ar = (TextureAtlas.AtlasRegion) tex.texture;
+
+            TextureRegion tr =  tex.texture;
 
             // Avoid a crash
-            if (ar == null) {
+            if (tr == null) {
                 log.error("Null pointer instead of an AtlasRegion");
                 continue;
             }
 
+            float x = 0;
+            float y = 0;
+            float xOrigin = 0;
+            float yOrigin = 0;
+            float rotation = 0;
 
-            batch.draw(ar, tc.x / scale, tc.y / scale, tc.x / scale, tc.y / scale, ar.getRegionWidth() / scale, ar.getRegionHeight() / scale, 1, 1, tc.r);
+            // Valeurs avec Transform
+            if (tc != null)
+            {
+                x = tc.x;
+                y = tc.y;
+                xOrigin = tc.x / scale;
+                yOrigin = tc.y / scale;
+                rotation = tc.r;
+            }
 
+            // Cas avec physics
+            if (pc != null)
+            {
+                Body b = pc.body;
+                x = b.getPosition().x;
+                y = b.getPosition().y;
+                xOrigin = b.getPosition().x;
+                yOrigin = b.getPosition().y;
+                rotation = (float) Math.toDegrees(b.getAngle());
+            }
+
+            float width = tr.getRegionWidth() / scale;
+            float height = tr.getRegionHeight() / scale;
+            float xScale = 1;
+            float yScale = 1;
+
+            batch.draw(tr, x, y, xOrigin, yOrigin, width, height, xScale, yScale, rotation);
 
         }
 

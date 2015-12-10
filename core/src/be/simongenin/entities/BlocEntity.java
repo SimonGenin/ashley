@@ -4,10 +4,10 @@ import be.simongenin.World;
 import be.simongenin.components.PhysicsComponent;
 import be.simongenin.components.ResistanceComponent;
 import be.simongenin.components.TextureComponent;
-import be.simongenin.components.TransformComponent;
 import be.simongenin.textures.TextureLoader;
 import be.simongenin.textures.TextureType;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -21,10 +21,9 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
  */
 public class BlocEntity extends Entity {
 
-    private static float SIZE = 128;
-    private static float PHYSICS_SIZE = SIZE / World.scale;
+    // physics based
+    private static float SIZE = 1;
 
-    TransformComponent positionComponent;
     TextureComponent textureComponent;
     ResistanceComponent resistanceComponent;
     PhysicsComponent physicsComponent;
@@ -33,14 +32,9 @@ public class BlocEntity extends Entity {
 
         super();
 
-        positionComponent = new TransformComponent();
         textureComponent = new TextureComponent();
         resistanceComponent = new ResistanceComponent();
         physicsComponent = new PhysicsComponent();
-
-        positionComponent.x = x;
-        positionComponent.y = y;
-        positionComponent.r = r;
 
         textureComponent.texture = TextureLoader.load(texture, TextureType.BLOC);
         textureComponent.priority = 0;
@@ -49,15 +43,13 @@ public class BlocEntity extends Entity {
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
-        float offset = PHYSICS_SIZE / 2;
-        float scaledXPos = x / World.scale;
-        float scaledYPos = y / World.scale;
-        bodyDef.position.set(PHYSICS_SIZE * scaledXPos + offset, PHYSICS_SIZE * scaledYPos + offset);
+        bodyDef.position.set(x, y);
+        bodyDef.angle = (float) Math.toRadians(r);
 
         Body body = World.physics.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(PHYSICS_SIZE / 2, PHYSICS_SIZE / 2);
+        shape.setAsBox(SIZE / 2, SIZE / 2, new Vector2(SIZE / 2, SIZE / 2), 0);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -71,7 +63,6 @@ public class BlocEntity extends Entity {
 
         physicsComponent.body = body;
 
-        add(positionComponent);
         add(textureComponent);
         add(resistanceComponent);
         add(physicsComponent);

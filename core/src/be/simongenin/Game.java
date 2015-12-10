@@ -21,22 +21,16 @@ public class Game extends ApplicationAdapter {
 
 		world = new World();
 
-		engine.addSystem(new RenderingSystem());
-		engine.addSystem(new MovementSystem());
-		engine.addSystem(new GravitySystem());
 		engine.addSystem(new PlayerInputSystem());
+		engine.addSystem(new RenderingSystem());
 
-		BlocEntity b = new BlocEntity(128, 128, 0, "dirt", 1);
+		BlocEntity b = new BlocEntity(1, 1, 0, "dirt", 1);
 		BlocEntity b2 = new BlocEntity(0, 0, 0, "stone", 1);
 		engine.addEntity(b);
 		engine.addEntity(b2);
 
-		PlayerEntity player = new PlayerEntity(-10, 150);
+		PlayerEntity player = new PlayerEntity(-0.1f, 2);
 		engine.addEntity(player);
-
-
-		engine.getSystem(GravitySystem.class).setProcessing(false);
-
 
 	}
 

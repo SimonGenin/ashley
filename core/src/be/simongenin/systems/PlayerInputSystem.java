@@ -1,8 +1,6 @@
 package be.simongenin.systems;
 
-import be.simongenin.components.MovementComponent;
 import be.simongenin.utils.Families;
-import be.simongenin.utils.Mappers;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.EntitySystem;
@@ -27,20 +25,14 @@ public class PlayerInputSystem extends EntitySystem {
 
         for (Entity entity : entities) {
 
-            MovementComponent mc = Mappers.movementComponents.get(entity);
-
-            mc.x = 0;
 
             if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-                mc.x = 1 * speed;
             }
 
             if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-                mc.x = -1 * speed;
             }
 
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                mc.y = 50;
             }
 
         }
