@@ -141,7 +141,7 @@ public class RenderingSystem extends IteratingSystem {
         // Closure
         batch.end();
 
-        physicsDebugRenderer.render(World.physics, camera.combined);
+        // physicsDebugRenderer.render(World.physics, camera.combined);
 
         renderQueue.clear();
 

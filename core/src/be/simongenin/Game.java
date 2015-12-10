@@ -16,7 +16,6 @@ public class Game extends ApplicationAdapter {
 	@Override
 	public void create () {
 
-
 		engine = new Engine();
 
 		world = new World();
@@ -24,12 +23,23 @@ public class Game extends ApplicationAdapter {
 		engine.addSystem(new PlayerInputSystem());
 		engine.addSystem(new RenderingSystem());
 
-		BlocEntity b = new BlocEntity(1, 1, 0, "dirt", 1);
-		BlocEntity b2 = new BlocEntity(0, 0, 0, "stone", 1);
-		engine.addEntity(b);
-		engine.addEntity(b2);
+		BlocEntity b1 = new BlocEntity(-2, 1, 0, "stone", 1);
+		BlocEntity b2 = new BlocEntity(-2, 0, 0, "stone", 1);
+		BlocEntity b3 = new BlocEntity(-1, 0, 0, "stone", 1);
+		BlocEntity b4 = new BlocEntity(0, 0, 0, "stone", 1);
+		BlocEntity b5 = new BlocEntity(1, 0, 0, "stone", 1);
+		BlocEntity b6 = new BlocEntity(2, 0, 0, "stone", 1);
+		BlocEntity b7 = new BlocEntity(2, 1, 0, "stone", 1);
 
-		PlayerEntity player = new PlayerEntity(-0.1f, 2);
+		engine.addEntity(b1);
+		engine.addEntity(b2);
+		engine.addEntity(b3);
+		engine.addEntity(b4);
+		engine.addEntity(b5);
+		engine.addEntity(b6);
+		engine.addEntity(b7);
+
+		PlayerEntity player = new PlayerEntity(0, 1);
 		engine.addEntity(player);
 
 	}
