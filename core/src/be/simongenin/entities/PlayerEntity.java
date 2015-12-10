@@ -1,10 +1,11 @@
 package be.simongenin.entities;
 
+import be.simongenin.World;
 import be.simongenin.components.*;
 import be.simongenin.textures.TextureLoader;
 import be.simongenin.textures.TextureType;
 import com.badlogic.ashley.core.Entity;
-import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.physics.box2d.BodyDef;
 
 import java.util.ArrayList;
 
@@ -14,9 +15,8 @@ public class PlayerEntity extends Entity {
     GravityComponent gravityComponent;
     MovementComponent movementComponent;
     TextureComponent textureComponent;
-    CollisionComponent collisionComponent;
+    PhysicsComponent physicsComponent;
     PlayerInputComponent playerInputComponent;
-
 
     public PlayerEntity(int x, int y) {
 
@@ -26,7 +26,7 @@ public class PlayerEntity extends Entity {
         gravityComponent = new GravityComponent();
         movementComponent = new MovementComponent();
         textureComponent = new TextureComponent();
-        collisionComponent  = new CollisionComponent();
+        physicsComponent  = new PhysicsComponent();
         playerInputComponent = new PlayerInputComponent();
 
         transformComponent.x = x;
@@ -37,14 +37,17 @@ public class PlayerEntity extends Entity {
         textureComponent.texture = TextureLoader.load("sand", TextureType.BLOC);
         textureComponent.priority = 1;
 
-        collisionComponent.bounds = new Rectangle(x, y, 128, 128);
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
 
+        physicsComponent.body = World.physics.createBody(bodyDef);
 
         add(transformComponent);
         add(gravityComponent);
         add(movementComponent);
         add(textureComponent);
-        add(collisionComponent);
+        add(physicsComponent);
         add(playerInputComponent);
 
     }

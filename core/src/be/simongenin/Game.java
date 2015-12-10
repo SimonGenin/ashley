@@ -11,16 +11,19 @@ import com.badlogic.gdx.graphics.GL20;
 public class Game extends ApplicationAdapter {
 
 	Engine engine;
+	World world;
 	
 	@Override
 	public void create () {
 
+
 		engine = new Engine();
+
+		world = new World();
 
 		engine.addSystem(new RenderingSystem());
 		engine.addSystem(new MovementSystem());
 		engine.addSystem(new GravitySystem());
-		engine.addSystem(new CollisionSystem());
 		engine.addSystem(new PlayerInputSystem());
 
 		BlocEntity b = new BlocEntity(128, 128, 0, "dirt", 1);
@@ -28,8 +31,11 @@ public class Game extends ApplicationAdapter {
 		engine.addEntity(b);
 		engine.addEntity(b2);
 
-		PlayerEntity player = new PlayerEntity(50, 150);
+		PlayerEntity player = new PlayerEntity(-10, 150);
 		engine.addEntity(player);
+
+
+		engine.getSystem(GravitySystem.class).setProcessing(false);
 
 
 	}
@@ -41,6 +47,8 @@ public class Game extends ApplicationAdapter {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		engine.update(Gdx.graphics.getDeltaTime() * 50);
+
+		World.physics.step(1 / 60f, 6, 2);
 
 	}
 

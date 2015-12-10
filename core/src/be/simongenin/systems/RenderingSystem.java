@@ -1,5 +1,6 @@
 package be.simongenin.systems;
 
+import be.simongenin.World;
 import be.simongenin.components.TextureComponent;
 import be.simongenin.components.TransformComponent;
 import be.simongenin.utils.Families;
@@ -10,26 +11,33 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Logger;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import java.util.Comparator;
 
 public class RenderingSystem extends IteratingSystem {
+
+    private final float scale = World.scale;
 
     private Array<Entity> renderQueue;
     private Comparator<Entity> comparator;
 
     private OrthographicCamera camera;
     private SpriteBatch batch;
+    private ScreenViewport viewport;
 
     private Logger log;
+    private Box2DDebugRenderer physicsDebugRenderer;
 
     public RenderingSystem() {
         super(Families.renderableEntities);
 
-        // Set ut the logger
+        // Set up the loggers
         log = new Logger(this.getClass().getSimpleName());
+        physicsDebugRenderer = new Box2DDebugRenderer();
 
         // Create the rendering queue
         renderQueue = new Array<>();
@@ -37,25 +45,23 @@ public class RenderingSystem extends IteratingSystem {
         // Create the batch
         batch = new SpriteBatch();
 
-        // Set up the camera
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        camera.position.set(Gdx.graphics.getWidth() / 2, Gdx.graphics.getHeight() / 2, 0);
+        // Set up the camera and viewport
+        camera = new OrthographicCamera(Gdx.graphics.getWidth() / scale, Gdx.graphics.getHeight() / scale);
+        // camera.position.set(0, 0, 0);
 
         // Set up the comparator
-        comparator = new Comparator<Entity>() {
-            @Override
-            public int compare(Entity e1, Entity e2) {
+        comparator = (e1, e2) -> {
 
-                TextureComponent tcE1 = Mappers.textureComponents.get(e1);
-                TextureComponent tcE2 = Mappers.textureComponents.get(e2);
+            TextureComponent tcE1 = Mappers.textureComponents.get(e1);
+            TextureComponent tcE2 = Mappers.textureComponents.get(e2);
 
-                int pE1 = tcE1.priority;
-                int pE2 = tcE2.priority;
+            int pE1 = tcE1.priority;
+            int pE2 = tcE2.priority;
 
-                if (pE1 == pE2) return 0;
-                else if (pE1 > pE2) return 1;
-                else return -1;
-            }
+            if (pE1 == pE2) return 0;
+            else if (pE1 > pE2) return 1;
+            else return -1;
+
         };
 
     }
@@ -88,13 +94,16 @@ public class RenderingSystem extends IteratingSystem {
             }
 
 
-            batch.draw(ar, tc.x, tc.y, tc.x, tc.y, ar.getRegionWidth(), ar.getRegionHeight(), 1, 1, tc.r);
+            batch.draw(ar, tc.x / scale, tc.y / scale, tc.x / scale, tc.y / scale, ar.getRegionWidth() / scale, ar.getRegionHeight() / scale, 1, 1, tc.r);
 
 
         }
 
         // Closure
         batch.end();
+
+        physicsDebugRenderer.render(World.physics, camera.combined);
+
         renderQueue.clear();
 
     }
@@ -109,9 +118,8 @@ public class RenderingSystem extends IteratingSystem {
 
     public void onresize(int width, int height) {
 
-        camera.viewportWidth = width;
-        camera.viewportHeight = height;
-
+        camera.viewportWidth = width / scale;
+        camera.viewportHeight = height / scale;
         camera.update();
 
     }
